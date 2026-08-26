@@ -1,0 +1,284 @@
+{% extends "dashboard/_shell.html" %}
+{% block title %}{{ 'محرر البطاقة' if locale=='ar' else 'Card Builder' }} — CardX{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/builder.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/card-templates.css') }}">
+{% endblock %}
+{% block page_title %}{{ card.first_name }} {{ card.last_name }} — {{ 'المحرر' if locale=='ar' else 'Builder' }}{% endblock %}
+{% block topbar_actions %}
+<div style="display:flex;gap:8px;align-items:center;">
+  <span id="saveStatus" style="font-size:12.5px;color:var(--muted-2);"></span>
+  <a href="{{ url_for('cards.public_card', username=card.username) }}" target="_blank" class="btn btn-outline btn-sm">👁 {{ t('view_card') }}</a>
+</div>
+{% endblock %}
+
+{% block dash_content %}
+<div class="builder-shell">
+  <div>
+    <div class="builder-tabs">
+      <button class="tab-btn active" data-tab="content">{{ 'المحتوى' if locale=='ar' else 'Content' }}</button>
+      <button class="tab-btn" data-tab="design">{{ 'التصميم' if locale=='ar' else 'Design' }}</button>
+      <button class="tab-btn" data-tab="colors">{{ 'الألوان' if locale=='ar' else 'Colors' }}</button>
+      <button class="tab-btn" data-tab="social">{{ 'روابط التواصل' if locale=='ar' else 'Social Links' }}</button>
+      <button class="tab-btn" data-tab="sections">{{ 'الأقسام' if locale=='ar' else 'Sections' }}</button>
+      <button class="tab-btn" data-tab="qr">QR Code</button>
+      <button class="tab-btn" data-tab="seo">SEO</button>
+      <button class="tab-btn" data-tab="settings">{{ t('settings') }}</button>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="builder-pane active" data-pane="content">
+      <form id="mainForm" method="post" action="{{ url_for('cards.update_card', card_id=card.id) }}" class="panel">
+        <div class="form-row">
+          <div class="field"><label>{{ 'الاسم الأول' if locale=='ar' else 'First name' }}</label><input type="text" name="first_name" value="{{ card.first_name }}" data-live="pcName"></div>
+          <div class="field"><label>{{ 'اسم العائلة' if locale=='ar' else 'Last name' }}</label><input type="text" name="last_name" value="{{ card.last_name }}" data-live="pcName"></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>{{ 'المسمى الوظيفي' if locale=='ar' else 'Job title' }}</label><input type="text" name="job_title" value="{{ card.job_title }}" data-live="pcRole"></div>
+          <div class="field"><label>{{ 'الشركة' if locale=='ar' else 'Company' }}</label><input type="text" name="company" value="{{ card.company }}" data-live="pcCompany"></div>
+        </div>
+        <div class="field"><label>{{ 'نبذة' if locale=='ar' else 'Bio' }}</label><textarea name="bio" data-live="pcBio">{{ card.bio }}</textarea></div>
+        <div class="form-row">
+          <div class="field"><label>{{ 'الهاتف' if locale=='ar' else 'Phone' }}</label><input type="tel" name="phone" value="{{ card.phone }}"></div>
+          <div class="field"><label>WhatsApp</label><input type="tel" name="whatsapp" value="{{ card.whatsapp }}"></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>{{ 'البريد الإلكتروني' if locale=='ar' else 'Email' }}</label><input type="email" name="email" value="{{ card.email }}"></div>
+          <div class="field"><label>{{ 'الموقع الإلكتروني' if locale=='ar' else 'Website' }}</label><input type="url" name="website" value="{{ card.website }}"></div>
+        </div>
+        <div class="field"><label>{{ 'العنوان' if locale=='ar' else 'Address' }}</label><input type="text" name="address" value="{{ card.address }}"></div>
+        <input type="hidden" name="template" value="{{ card.template }}">
+        <input type="hidden" name="primary_color" value="{{ card.primary_color }}">
+        <input type="hidden" name="accent_color" value="{{ card.accent_color }}">
+        <input type="hidden" name="bg_color" value="{{ card.bg_color }}">
+        <input type="hidden" name="text_color" value="{{ card.text_color }}">
+        <input type="hidden" name="button_style" value="{{ card.button_style }}">
+        <input type="hidden" name="radius" value="{{ card.radius }}">
+        <input type="hidden" name="shadow" value="{{ card.shadow }}">
+        <input type="hidden" name="avatar_shape" value="{{ card.avatar_shape }}">
+        <input type="hidden" name="seo_title" value="{{ card.seo_title }}">
+        <input type="hidden" name="seo_description" value="{{ card.seo_description }}">
+        <input type="hidden" name="is_published" value="{{ 'on' if card.is_published else '' }}">
+        <input type="hidden" name="seo_index" value="{{ 'on' if card.seo_index else '' }}">
+        <button type="submit" class="btn btn-primary">{{ 'حفظ' if locale=='ar' else 'Save' }}</button>
+      </form>
+
+      <div class="panel">
+        <h3 style="margin-bottom:14px;">{{ 'الصور' if locale=='ar' else 'Images' }}</h3>
+        <div class="form-row">
+          <form method="post" enctype="multipart/form-data" action="{{ url_for('cards.upload_image', card_id=card.id) }}">
+            <input type="hidden" name="kind" value="avatar">
+            <label>{{ 'صورة الملف الشخصي' if locale=='ar' else 'Profile photo' }}</label>
+            <input type="file" name="image" accept="image/*" required>
+            <button type="submit" class="btn btn-sm btn-outline" style="margin-top:8px;">{{ 'رفع' if locale=='ar' else 'Upload' }}</button>
+          </form>
+          <form method="post" enctype="multipart/form-data" action="{{ url_for('cards.upload_image', card_id=card.id) }}">
+            <input type="hidden" name="kind" value="cover">
+            <label>{{ 'صورة الغلاف' if locale=='ar' else 'Cover photo' }}</label>
+            <input type="file" name="image" accept="image/*" required>
+            <button type="submit" class="btn btn-sm btn-outline" style="margin-top:8px;">{{ 'رفع' if locale=='ar' else 'Upload' }}</button>
+          </form>
+        </div>
+      </div>
+
+      {% for key, label in section_labels.items() %}
+      {% if key in ['about','services','experience','skills'] %}
+      <div class="panel">
+        <form method="post" action="{{ url_for('cards.update_content', card_id=card.id) }}">
+          <input type="hidden" name="section" value="{{ key }}">
+          <h3 style="margin-bottom:14px;">{{ label }}</h3>
+          <div class="field"><input type="text" name="title" placeholder="{{ 'عنوان القسم' if locale=='ar' else 'Section title' }}" value="{{ content[key].title if key in content else '' }}"></div>
+          <div class="field"><textarea name="body" placeholder="...">{{ content[key].body if key in content else '' }}</textarea></div>
+          <button type="submit" class="btn btn-sm btn-outline">{{ 'حفظ' if locale=='ar' else 'Save' }}</button>
+        </form>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+
+    <!-- DESIGN -->
+    <div class="builder-pane" data-pane="design">
+      <div class="panel">
+        <h3 style="margin-bottom:14px;">{{ 'القالب' if locale=='ar' else 'Template' }}</h3>
+        <div class="template-pick-grid">
+          {% for tpl in templates %}
+          <div class="template-pick {{ 'selected' if tpl.slug==card.template }}" data-template="{{ tpl.slug }}"
+               data-primary="{{ tpl.primary_color }}" data-accent="{{ tpl.accent_color }}" data-text="{{ tpl.text_color }}" data-shape="{{ tpl.avatar_shape }}">
+            <div class="tp-dot" style="background:{{ tpl.primary_color }};{% if tpl.bg_color.startswith('gradient') %}background:linear-gradient(135deg,{{tpl.primary_color}},{{tpl.accent_color}});{% endif %}"></div>
+            <span>{{ tpl.name }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="panel">
+        <h3 style="margin-bottom:14px;">{{ 'شكل الصورة الشخصية' if locale=='ar' else 'Avatar shape' }}</h3>
+        <div style="display:flex;gap:10px;">
+          {% for shape in ['circle','rounded-square','blob'] %}
+          <button type="button" class="btn btn-sm btn-outline avatar-shape-btn" data-shape="{{ shape }}">{{ shape|capitalize }}</button>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="panel">
+        <h3 style="margin-bottom:14px;">{{ 'نمط الأزرار' if locale=='ar' else 'Button style' }}</h3>
+        <div style="display:flex;gap:10px;">
+          {% for style in ['filled','outline','soft'] %}
+          <button type="button" class="btn btn-sm btn-outline btn-style-btn" data-style="{{ style }}">{{ style|capitalize }}</button>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="panel">
+        <h3 style="margin-bottom:14px;">{{ 'الزوايا والظل' if locale=='ar' else 'Radius & Shadow' }}</h3>
+        <div class="form-row">
+          <div class="field"><label>{{ 'الزوايا' if locale=='ar' else 'Radius' }}</label>
+            <select id="radiusSelect"><option value="sm">Small</option><option value="xl" selected>Large</option></select>
+          </div>
+          <div class="field"><label>{{ 'الظل' if locale=='ar' else 'Shadow' }}</label>
+            <select id="shadowSelect"><option value="soft" selected>Soft</option><option value="none">None</option></select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLORS -->
+    <div class="builder-pane" data-pane="colors">
+      <div class="panel">
+        <h3 style="margin-bottom:16px;">{{ 'ألوان مخصصة' if locale=='ar' else 'Custom colors' }}</h3>
+        <div class="color-field-row"><label>{{ 'اللون الأساسي' if locale=='ar' else 'Primary color' }}</label><input type="color" id="primaryColorInput" value="{{ card.primary_color }}"></div>
+        <div class="color-field-row"><label>{{ 'لون التمييز' if locale=='ar' else 'Accent color' }}</label><input type="color" id="accentColorInput" value="{{ card.accent_color }}"></div>
+        <div class="color-field-row"><label>{{ 'لون الخلفية' if locale=='ar' else 'Background color' }}</label><input type="color" id="bgColorInput" value="{{ card.bg_color }}"></div>
+        <div class="color-field-row"><label>{{ 'لون النص' if locale=='ar' else 'Text color' }}</label><input type="color" id="textColorInput" value="{{ card.text_color }}"></div>
+        <button type="button" id="saveColorsBtn" class="btn btn-primary btn-sm">{{ 'حفظ الألوان' if locale=='ar' else 'Save colors' }}</button>
+      </div>
+    </div>
+
+    <!-- SOCIAL LINKS -->
+    <div class="builder-pane" data-pane="social">
+      <form method="post" action="{{ url_for('cards.update_social', card_id=card.id) }}" class="panel">
+        <h3 style="margin-bottom:14px;">{{ 'روابط التواصل الاجتماعي' if locale=='ar' else 'Social Links' }}</h3>
+        <div id="socialRows">
+          {% for link in links %}
+          <div class="social-row">
+            <select name="platform[]">{% for p in social_platforms %}<option value="{{ p }}" {{ 'selected' if p==link.platform }}>{{ p|capitalize }}</option>{% endfor %}</select>
+            <input type="url" name="url[]" value="{{ link.url }}" placeholder="https://...">
+            <button type="button" class="btn btn-sm btn-outline remove-row-btn" style="flex-shrink:0;">✕</button>
+          </div>
+          {% endfor %}
+        </div>
+        <button type="button" id="addSocialRow" class="btn btn-sm btn-ghost" style="margin:10px 0;">+ {{ 'إضافة رابط' if locale=='ar' else 'Add link' }}</button>
+        <br><button type="submit" class="btn btn-primary">{{ 'حفظ الروابط' if locale=='ar' else 'Save links' }}</button>
+      </form>
+    </div>
+
+    <!-- SECTIONS -->
+    <div class="builder-pane" data-pane="sections">
+      <div class="panel">
+        <h3 style="margin-bottom:14px;">{{ 'ترتيب الأقسام (اسحب لإعادة الترتيب)' if locale=='ar' else 'Section order (drag to reorder)' }}</h3>
+        <div class="section-order-list" id="sectionOrderList">
+          {% for sec in card.sections_order.split(',') %}
+          {% if sec %}
+          <div class="section-order-item" draggable="true" data-section="{{ sec }}">
+            <span class="drag-handle">⠿</span>
+            <span>{{ section_labels.get(sec, sec) }}</span>
+            <label class="switch toggle-visible">
+              <input type="checkbox" {{ 'checked' if sec in card.sections_visible.split(',') }}>
+              <span class="track"></span>
+            </label>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+        <div id="sectionsSaveStatus" class="hint" style="margin-top:10px;"></div>
+      </div>
+    </div>
+
+    <!-- QR -->
+    <div class="builder-pane" data-pane="qr">
+      <div class="panel" style="text-align:center;">
+        <h3 style="margin-bottom:16px;">QR Code</h3>
+        <img src="{{ url_for('cards.card_qr', username=card.username) }}" style="width:200px;height:200px;margin:0 auto 16px;border:1px solid var(--line);border-radius:16px;">
+        <p style="margin-bottom:16px;font-size:13px;">{{ 'هذا الرمز ثابت ويؤدي دائمًا لرابط بطاقتك حتى لو غيّرت البيانات.' if locale=='ar' else "This code is permanent — it always points to your card link even if you edit the content." }}</p>
+        <div style="display:flex;gap:10px;justify-content:center;">
+          <a href="{{ url_for('cards.card_qr', username=card.username) }}" download class="btn btn-primary btn-sm">{{ 'تحميل QR' if locale=='ar' else 'Download QR' }}</a>
+          <button data-copy="{{ request.url_root }}c/{{ card.username }}" data-copied-label="{{ 'تم النسخ!' if locale=='ar' else 'Copied!' }}" class="btn btn-outline btn-sm">{{ 'نسخ الرابط' if locale=='ar' else 'Copy link' }}</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEO -->
+    <div class="builder-pane" data-pane="seo">
+      <form method="post" action="{{ url_for('cards.update_card', card_id=card.id) }}" class="panel">
+        {% for f in ['first_name','last_name','job_title','company','bio','phone','whatsapp','email','website','address','template','primary_color','accent_color','bg_color','text_color','button_style','radius','shadow','avatar_shape'] %}
+        <input type="hidden" name="{{ f }}" value="{{ card[f] }}">
+        {% endfor %}
+        <input type="hidden" name="is_published" value="{{ 'on' if card.is_published else '' }}">
+        <div class="field"><label>SEO Title</label><input type="text" name="seo_title" value="{{ card.seo_title }}"></div>
+        <div class="field"><label>SEO Description</label><textarea name="seo_description">{{ card.seo_description }}</textarea></div>
+        <div class="checkbox-row" style="margin-bottom:16px;">
+          <label class="switch"><input type="checkbox" name="seo_index" {{ 'checked' if card.seo_index }}><span class="track"></span></label>
+          <span>{{ 'السماح لمحركات البحث بفهرسة البطاقة' if locale=='ar' else 'Allow search engines to index this card' }}</span>
+        </div>
+        <button type="submit" class="btn btn-primary">{{ 'حفظ' if locale=='ar' else 'Save' }}</button>
+      </form>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="builder-pane" data-pane="settings">
+      <form method="post" action="{{ url_for('cards.update_card', card_id=card.id) }}" class="panel">
+        {% for f in ['first_name','last_name','job_title','company','bio','phone','whatsapp','email','website','address','template','primary_color','accent_color','bg_color','text_color','button_style','radius','shadow','avatar_shape','seo_title','seo_description'] %}
+        <input type="hidden" name="{{ f }}" value="{{ card[f] }}">
+        {% endfor %}
+        <input type="hidden" name="seo_index" value="{{ 'on' if card.seo_index else '' }}">
+        <div class="checkbox-row" style="margin-bottom:18px;">
+          <label class="switch"><input type="checkbox" name="is_published" {{ 'checked' if card.is_published }}><span class="track"></span></label>
+          <span>{{ 'نشر البطاقة (متاحة للعامة)' if locale=='ar' else 'Publish card (publicly accessible)' }}</span>
+        </div>
+        <button type="submit" class="btn btn-primary">{{ 'حفظ' if locale=='ar' else 'Save' }}</button>
+      </form>
+      <div class="panel">
+        <h3 style="margin-bottom:12px;color:var(--danger);">{{ 'منطقة الخطر' if locale=='ar' else 'Danger zone' }}</h3>
+        <form method="post" action="{{ url_for('cards.delete_card', card_id=card.id) }}" onsubmit="return confirm('{{ 'حذف البطاقة نهائيًا؟' if locale=='ar' else 'Permanently delete this card?' }}');">
+          <button type="submit" class="btn btn-outline" style="color:var(--danger);border-color:#FECDCA;">{{ 'حذف البطاقة' if locale=='ar' else 'Delete card' }}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVE PREVIEW -->
+  <div class="preview-frame-outer">
+    <div class="preview-phone">
+      <div class="preview-screen">
+        <div id="livePreview" class="pc-wrap layout-{{ tpl_layout if tpl_layout else 'centered' }}" style="--pc-bg:{{ card.bg_color }};--pc-text:{{ card.text_color }};--pc-primary:{{ card.primary_color }};--pc-accent:{{ card.accent_color }};height:100%;overflow-y:auto;">
+          <div class="pc-header">
+            <img id="pcAvatarImg" class="pc-avatar shape-{{ card.avatar_shape }}" style="width:100px;height:100px;" src="{{ card.avatar_url or 'https://api.dicebear.com/7.x/initials/svg?seed=' + (card.first_name or 'CardX') }}">
+            <div id="pcName" class="pc-name">{{ card.first_name }} {{ card.last_name }}</div>
+            <div id="pcRole" class="pc-role">{{ card.job_title }}</div>
+            <div id="pcCompany" class="pc-company">{{ card.company }}</div>
+          </div>
+          <div class="pc-actions">
+            <div class="pc-action-btn"><span class="ic">📞</span>{{ t('call_me') }}</div>
+            <div class="pc-action-btn"><span class="ic">✉️</span>{{ t('email_me') }}</div>
+            <div class="pc-action-btn"><span class="ic">💬</span>WhatsApp</div>
+          </div>
+          <div class="pc-section" id="pcAboutSection">
+            <h3>{{ t('about_me') }}</h3>
+            <p id="pcBio">{{ card.bio or ('اكتب نبذة عنك...' if locale=='ar' else 'Write a short bio...') }}</p>
+          </div>
+          <div class="pc-section">
+            <h3>{{ t('contact') }}</h3>
+            <div class="pc-social-list" id="pcSocialList">
+              {% for link in links %}
+              <div class="pc-social-item"><div class="pc-si-left"><span class="pc-si-icon">🔗</span>{{ link.platform|capitalize }}</div><span>›</span></div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>window.CARDX_CARD_ID = {{ card.id }};</script>
+<script src="{{ url_for('static', filename='js/builder.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "dashboard/_shell.html" %}
+{% block title %}Webhooks — CardX{% endblock %}
+{% block page_title %}Webhooks{% endblock %}
+{% block dash_content %}
+<div class="panel">
+  <div class="panel-head"><h3>{{ 'إضافة Webhook' if locale=='ar' else 'Add a webhook' }}</h3></div>
+  <form method="post" class="form-row">
+    <input type="hidden" name="action" value="create">
+    <input type="url" name="url" placeholder="https://yourapp.com/webhooks/cardx" required>
+    <select name="event_type" required>
+      {% for e in events %}<option value="{{ e }}">{{ e }}</option>{% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary" style="flex-shrink:0;">{{ 'إضافة' if locale=='ar' else 'Add' }}</button>
+  </form>
+</div>
+<div class="panel">
+  <div class="panel-head"><h3>{{ 'Webhooks النشطة' if locale=='ar' else 'Active webhooks' }}</h3></div>
+  {% if hooks %}
+  <table class="data-table">
+    <tr><th>URL</th><th>Event</th><th>{{ 'آخر استجابة' if locale=='ar' else 'Last status' }}</th><th></th></tr>
+    {% for h in hooks %}
+    <tr>
+      <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ h.url }}</td>
+      <td><code class="inline">{{ h.event_type }}</code></td>
+      <td>{{ h.last_status or '—' }}</td>
+      <td>
+        <form method="post"><input type="hidden" name="action" value="delete"><input type="hidden" name="webhook_id" value="{{ h.id }}">
+          <button type="submit" class="btn btn-sm btn-outline" style="color:var(--danger);">{{ 'حذف' if locale=='ar' else 'Delete' }}</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <div class="empty-state"><div class="icon">🪝</div>{{ 'لا توجد Webhooks بعد.' if locale=='ar' else 'No webhooks yet.' }}</div>
+  {% endif %}
+</div>
+{% endblock %}

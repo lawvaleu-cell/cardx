@@ -1,0 +1,20 @@
+{% extends "dashboard/_shell.html" %}
+{% block title %}{{ t('contacts') }} — CardX{% endblock %}
+{% block page_title %}{{ t('contacts') }}{% endblock %}
+{% block dash_content %}
+<div class="panel">
+  {% if events %}
+  <table class="data-table">
+    <tr><th>{{ 'البطاقة' if locale=='ar' else 'Card' }}</th><th>{{ 'التاريخ' if locale=='ar' else 'Date' }}</th></tr>
+    {% for e in events %}
+    <tr>
+      <td>{{ card_map[e.card_id].first_name }} {{ card_map[e.card_id].last_name }} (/{{ card_map[e.card_id].username }})</td>
+      <td>{{ e.created_at | int | timestamp_to_date }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <div class="empty-state"><div class="icon">📇</div>{{ 'لا توجد جهات اتصال محفوظة بعد. كل مرة يحفظ فيها زائر بطاقتك ستظهر هنا.' if locale=='ar' else 'No saved contacts yet. Every time a visitor saves your card, it will show up here.' }}</div>
+  {% endif %}
+</div>
+{% endblock %}

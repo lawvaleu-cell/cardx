@@ -1,0 +1,39 @@
+{% extends "dashboard/_shell.html" %}
+{% block title %}{{ 'إدارة المستخدمين' if locale=='ar' else 'Manage Users' }} — CardX{% endblock %}
+{% block page_title %}{{ 'إدارة المستخدمين' if locale=='ar' else 'Manage Users' }}{% endblock %}
+{% block dash_content %}
+<div class="panel">
+  <table class="data-table">
+    <tr><th>{{ 'الاسم' if locale=='ar' else 'Name' }}</th><th>{{ 'البريد الإلكتروني' if locale=='ar' else 'Email' }}</th><th>{{ 'الخطة' if locale=='ar' else 'Plan' }}</th><th>{{ 'الحالة' if locale=='ar' else 'Status' }}</th><th></th></tr>
+    {% for u in users %}
+    <tr>
+      <td>{{ u.full_name }} {% if u.is_admin %}<span class="pill">admin</span>{% endif %}</td>
+      <td>{{ u.email }}</td>
+      <td>
+        <form method="post" style="display:flex;gap:6px;">
+          <input type="hidden" name="action" value="change_plan"><input type="hidden" name="user_id" value="{{ u.id }}">
+          <select name="plan_id" onchange="this.form.submit()">
+            {% for p in plans %}<option value="{{ p.id }}" {{ 'selected' if p.id==u.plan_id }}>{{ p.name }}</option>{% endfor %}
+          </select>
+        </form>
+      </td>
+      <td>{% if u.suspended %}<span class="pill" style="background:#FEF3F2;color:#B42318;">{{ 'موقوف' if locale=='ar' else 'Suspended' }}</span>{% else %}<span class="pill">{{ 'نشط' if locale=='ar' else 'Active' }}</span>{% endif %}</td>
+      <td style="white-space:nowrap;">
+        <form method="post" style="display:inline;">
+          <input type="hidden" name="user_id" value="{{ u.id }}">
+          {% if u.suspended %}
+          <input type="hidden" name="action" value="unsuspend"><button type="submit" class="btn btn-sm btn-outline">{{ 'إلغاء الإيقاف' if locale=='ar' else 'Unsuspend' }}</button>
+          {% else %}
+          <input type="hidden" name="action" value="suspend"><button type="submit" class="btn btn-sm btn-outline">{{ 'إيقاف' if locale=='ar' else 'Suspend' }}</button>
+          {% endif %}
+        </form>
+        <form method="post" style="display:inline;" onsubmit="return confirm('{{ 'حذف المستخدم؟' if locale=='ar' else 'Delete user?' }}');">
+          <input type="hidden" name="action" value="delete"><input type="hidden" name="user_id" value="{{ u.id }}">
+          <button type="submit" class="btn btn-sm btn-outline" style="color:var(--danger);">{{ 'حذف' if locale=='ar' else 'Delete' }}</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

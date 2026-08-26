@@ -1,0 +1,25 @@
+{% extends "dashboard/_shell.html" %}
+{% block title %}{{ t('admin') }} — CardX{% endblock %}
+{% block page_title %}{{ t('admin') }}{% endblock %}
+{% block dash_content %}
+<div class="grid-4">
+  <div class="stat-card"><div class="stat-label">{{ 'المستخدمون' if locale=='ar' else 'Users' }}</div><div class="stat-value">{{ stats.users }}</div></div>
+  <div class="stat-card"><div class="stat-label">{{ t('total_cards') }}</div><div class="stat-value">{{ stats.cards }}</div></div>
+  <div class="stat-card"><div class="stat-label">{{ t('total_views') }}</div><div class="stat-value">{{ stats.views }}</div></div>
+  <div class="stat-card"><div class="stat-label">{{ 'الإيرادات' if locale=='ar' else 'Revenue' }}</div><div class="stat-value">${{ stats.revenue }}</div></div>
+</div>
+<div class="grid-3" style="margin-top:24px;">
+  <a href="{{ url_for('admin.users') }}" class="panel" style="text-align:center;">👤<br><strong>{{ 'إدارة المستخدمين' if locale=='ar' else 'Manage Users' }}</strong></a>
+  <a href="{{ url_for('admin.cards') }}" class="panel" style="text-align:center;">🪪<br><strong>{{ 'إدارة البطاقات' if locale=='ar' else 'Manage Cards' }}</strong></a>
+  <a href="{{ url_for('admin.plans') }}" class="panel" style="text-align:center;">💳<br><strong>{{ 'إدارة الخطط' if locale=='ar' else 'Manage Plans' }}</strong></a>
+  <a href="{{ url_for('admin.api_usage') }}" class="panel" style="text-align:center;">🔑<br><strong>{{ 'استخدام API' if locale=='ar' else 'API Usage' }}</strong></a>
+  <a href="{{ url_for('admin.templates_admin') }}" class="panel" style="text-align:center;">🎨<br><strong>{{ t('templates') }}</strong></a>
+</div>
+<div class="panel" style="margin-top:24px;">
+  <div class="panel-head"><h3>{{ 'أحدث المستخدمين' if locale=='ar' else 'Recent users' }}</h3></div>
+  <table class="data-table">
+    <tr><th>{{ 'الاسم' if locale=='ar' else 'Name' }}</th><th>{{ 'البريد الإلكتروني' if locale=='ar' else 'Email' }}</th><th>{{ 'تاريخ التسجيل' if locale=='ar' else 'Joined' }}</th></tr>
+    {% for u in recent_users %}<tr><td>{{ u.full_name }}</td><td>{{ u.email }}</td><td>{{ u.created_at | timestamp_to_date }}</td></tr>{% endfor %}
+  </table>
+</div>
+{% endblock %}

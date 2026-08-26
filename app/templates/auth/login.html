@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ t('nav_login') }} — CardX{% endblock %}
+{% block content %}
+<div class="auth-shell">
+  <div class="auth-box fade-up">
+    <div class="card-surface">
+      <div style="text-align:center;margin-bottom:26px;">
+        <span class="brand-mark" style="display:inline-flex;">X</span>
+        <h2 style="margin-top:14px;">{{ 'مرحبًا بعودتك' if locale=='ar' else 'Welcome back' }}</h2>
+      </div>
+      <form method="post">
+        <div class="field">
+          <label>{{ 'البريد الإلكتروني' if locale=='ar' else 'Email' }}</label>
+          <input type="email" name="email" required autofocus>
+        </div>
+        <div class="field">
+          <label>{{ 'كلمة المرور' if locale=='ar' else 'Password' }}</label>
+          <input type="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">{{ t('nav_login') }}</button>
+      </form>
+      <p style="text-align:center;margin-top:16px;font-size:13.5px;">
+        <a href="{{ url_for('auth.forgot') }}" style="color:var(--muted-2);">{{ 'نسيت كلمة المرور؟' if locale=='ar' else 'Forgot password?' }}</a>
+      </p>
+      <p style="text-align:center;margin-top:10px;font-size:14px;">
+        {{ 'ليس لديك حساب؟' if locale=='ar' else "Don't have an account?" }}
+        <a href="{{ url_for('auth.register') }}" style="color:var(--primary);font-weight:700;">{{ t('nav_signup') }}</a>
+      </p>
+      <div class="hint" style="text-align:center;margin-top:18px;">
+        {{ 'حساب المدير التجريبي:' if locale=='ar' else 'Demo admin account:' }} <code class="inline">admin@cardx.local</code> / <code class="inline">admin123</code>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

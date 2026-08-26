@@ -1,0 +1,36 @@
+{% extends "dashboard/_shell.html" %}
+{% block title %}{{ t('settings') }} — CardX{% endblock %}
+{% block page_title %}{{ t('settings') }}{% endblock %}
+{% block dash_content %}
+<div class="panel" style="max-width:520px;">
+  <h3 style="margin-bottom:16px;">{{ 'الملف الشخصي' if locale=='ar' else 'Profile' }}</h3>
+  <form method="post">
+    <input type="hidden" name="action" value="profile">
+    <div class="field"><label>{{ 'الاسم الكامل' if locale=='ar' else 'Full name' }}</label><input type="text" name="full_name" value="{{ current_user.full_name }}"></div>
+    <div class="field"><label>{{ 'اللغة' if locale=='ar' else 'Language' }}</label>
+      <select name="locale">
+        <option value="ar" {{ 'selected' if current_user.locale=='ar' }}>العربية</option>
+        <option value="en" {{ 'selected' if current_user.locale=='en' }}>English</option>
+        <option value="fr" {{ 'selected' if current_user.locale=='fr' }}>Français</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">{{ 'حفظ' if locale=='ar' else 'Save' }}</button>
+  </form>
+</div>
+<div class="panel" style="max-width:520px;">
+  <h3 style="margin-bottom:16px;">{{ 'الأمان' if locale=='ar' else 'Security' }}</h3>
+  <form method="post">
+    <input type="hidden" name="action" value="password">
+    <div class="field"><label>{{ 'كلمة المرور الحالية' if locale=='ar' else 'Current password' }}</label><input type="password" name="current_password" required></div>
+    <div class="field"><label>{{ 'كلمة المرور الجديدة' if locale=='ar' else 'New password' }}</label><input type="password" name="new_password" required minlength="6"></div>
+    <button type="submit" class="btn btn-primary">{{ 'تغيير كلمة المرور' if locale=='ar' else 'Change password' }}</button>
+  </form>
+</div>
+{% if not current_user.is_verified %}
+<div class="panel" style="max-width:520px;">
+  <h3 style="margin-bottom:10px;">{{ 'تفعيل البريد الإلكتروني' if locale=='ar' else 'Email verification' }}</h3>
+  <p style="font-size:13px;margin-bottom:12px;">{{ 'بريدك غير مُفعّل بعد (تجريبي: بدون إرسال بريد فعلي).' if locale=='ar' else 'Your email is not verified yet (demo: no real email is sent).' }}</p>
+  <a href="{{ url_for('auth.verify_email', token=session.get('pending_verify_token','')) }}" class="btn btn-outline btn-sm">{{ 'تفعيل الآن' if locale=='ar' else 'Verify now' }}</a>
+</div>
+{% endif %}
+{% endblock %}

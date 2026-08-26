@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ 'استعادة كلمة المرور' if locale=='ar' else 'Forgot password' }} — CardX{% endblock %}
+{% block content %}
+<div class="auth-shell">
+  <div class="auth-box fade-up">
+    <div class="card-surface">
+      <h2 style="margin-bottom:20px;">{{ 'استعادة كلمة المرور' if locale=='ar' else 'Reset your password' }}</h2>
+      <form method="post">
+        <div class="field">
+          <label>{{ 'البريد الإلكتروني' if locale=='ar' else 'Email' }}</label>
+          <input type="email" name="email" required autofocus>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">{{ 'إرسال رابط الاستعادة' if locale=='ar' else 'Send reset link' }}</button>
+      </form>
+      {% if reset_link %}
+      <div class="field" style="margin-top:20px;">
+        <label>{{ 'رابط إعادة التعيين (تجريبي)' if locale=='ar' else 'Reset link (demo)' }}</label>
+        <input type="text" readonly value="{{ reset_link }}" onclick="this.select()">
+        <a href="{{ reset_link }}" class="btn btn-outline btn-sm" style="margin-top:10px;">{{ 'فتح الرابط' if locale=='ar' else 'Open link' }}</a>
+      </div>
+      {% endif %}
+      <p style="text-align:center;margin-top:16px;font-size:14px;">
+        <a href="{{ url_for('auth.login') }}" style="color:var(--primary);font-weight:700;">{{ 'العودة لتسجيل الدخول' if locale=='ar' else 'Back to login' }}</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

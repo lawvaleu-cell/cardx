@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}API Documentation — CardX{% endblock %}
+{% block content %}
+<section class="section" style="padding-top:40px;">
+  <div class="container">
+    <div class="builder-shell" style="grid-template-columns:220px 1fr;">
+      <div>
+        <div class="tabs" style="flex-direction:column;border:none;">
+          <a href="#introduction" class="navlink" style="padding:8px 0;font-weight:700;">Introduction</a>
+          <a href="#authentication" class="navlink" style="padding:8px 0;">Authentication</a>
+          <a href="#cards" class="navlink" style="padding:8px 0;">Cards</a>
+          <a href="#templates" class="navlink" style="padding:8px 0;">Templates</a>
+          <a href="#qr" class="navlink" style="padding:8px 0;">QR Codes</a>
+          <a href="#contacts" class="navlink" style="padding:8px 0;">Contacts</a>
+          <a href="#analytics" class="navlink" style="padding:8px 0;">Analytics</a>
+          <a href="#webhooks" class="navlink" style="padding:8px 0;">Webhooks</a>
+          <a href="#errors" class="navlink" style="padding:8px 0;">Errors</a>
+          <a href="#rate-limits" class="navlink" style="padding:8px 0;">Rate Limits</a>
+          <a href="#sdk" class="navlink" style="padding:8px 0;">SDKs</a>
+        </div>
+      </div>
+      <div>
+        <h2 id="introduction">Introduction</h2>
+        <p style="margin:12px 0 24px;">CardX exposes a REST API so developers can create, manage and embed digital business cards inside their own products. Base URL:</p>
+        <pre class="code-block">{{ request.url_root }}api/v1</pre>
+
+        <h2 id="authentication" style="margin-top:40px;">Authentication</h2>
+        <p style="margin:12px 0;">Every request must include your API key as a Bearer token. Generate keys from <a href="{{ url_for('dashboard.api_keys') if current_user else url_for('auth.login') }}" style="color:var(--primary);font-weight:600;">Dashboard → API Keys</a>.</p>
+        <pre class="code-block">Authorization: Bearer cx_live_xxxxxxxxxxxxxxxxxxxx</pre>
+
+        <h2 id="cards" style="margin-top:40px;">Cards</h2>
+        <div class="tabs"><span class="pill" style="background:#ECFDF3;color:#067647;">POST</span>&nbsp; <code class="inline">/cards</code></div>
+        <pre class="code-block">curl -X POST {{ request.url_root }}api/v1/cards \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Ahmed Benali",
+    "title": "CEO",
+    "company": "ABC",
+    "phone": "+213555000000",
+    "email": "ahmed@example.com",
+    "template": "executive"
+  }'</pre>
+        <p style="margin:14px 0;">Response <code class="inline">201</code>:</p>
+        <pre class="code-block">{
+  "id": "card_9f2a1c4b",
+  "username": "ahmedbenali",
+  "url": "{{ request.url_root }}c/ahmedbenali",
+  "qr_code": "{{ request.url_root }}c/ahmedbenali/qr.png",
+  "status": "active"
+}</pre>
+        <div class="tabs" style="margin-top:24px;"><span class="pill">GET</span>&nbsp;<code class="inline">/cards</code></div>
+        <div class="tabs"><span class="pill">GET</span>&nbsp;<code class="inline">/cards/:id</code></div>
+        <div class="tabs"><span class="pill" style="background:#EEF2FF;color:#4338CA;">PUT</span>&nbsp;<code class="inline">/cards/:id</code></div>
+        <div class="tabs"><span class="pill" style="background:#FEF3F2;color:#B42318;">DELETE</span>&nbsp;<code class="inline">/cards/:id</code></div>
+
+        <h2 id="templates" style="margin-top:40px;">Templates</h2>
+        <p style="margin:12px 0;">Pass any of these slugs in the <code class="inline">template</code> field: <code class="inline">minimal</code>, <code class="inline">executive</code>, <code class="inline">corporate</code>, <code class="inline">luxury</code>, <code class="inline">gradient</code>, <code class="inline">glass</code>, <code class="inline">creative</code>, <code class="inline">dark</code>, <code class="inline">elegant</code>, <code class="inline">professional</code>.</p>
+
+        <h2 id="qr" style="margin-top:40px;">QR Codes</h2>
+        <p style="margin:12px 0;">Every card automatically gets a permanent QR code that always points to the card URL (it never changes even if you edit the card):</p>
+        <pre class="code-block">GET /c/{username}/qr.png</pre>
+
+        <h2 id="contacts" style="margin-top:40px;">Contacts</h2>
+        <pre class="code-block">POST /api/v1/cards/:id/contact
+→ { "vcard_url": ".../c/{username}/vcard.vcf" }</pre>
+
+        <h2 id="analytics" style="margin-top:40px;">Analytics</h2>
+        <pre class="code-block">GET /api/v1/cards/:id/analytics
+→ { "stats": { "view": 128, "qr_scan": 14, "click": 41, "contact_saved": 6 } }</pre>
+
+        <h2 id="webhooks" style="margin-top:40px;">Webhooks</h2>
+        <p style="margin:12px 0;">Register a webhook URL from Dashboard → Webhooks. CardX sends a signed <code class="inline">POST</code> with header <code class="inline">X-CardX-Signature</code> (HMAC-SHA256 of the body using your webhook secret) for these events:</p>
+        <pre class="code-block">card.created · card.updated · card.viewed
+qr.scanned · contact.saved · link.clicked</pre>
+
+        <h2 id="errors" style="margin-top:40px;">Errors</h2>
+        <pre class="code-block">401 invalid_api_key
+402 plan_limit_reached
+403 account_suspended
+404 not_found
+429 rate_limit_exceeded</pre>
+
+        <h2 id="rate-limits" style="margin-top:40px;">Rate Limits</h2>
+        <p style="margin:12px 0;">Each plan has a daily request cap (see <a href="{{ url_for('site.pricing') }}" style="color:var(--primary);font-weight:600;">Pricing</a>). Exceeding it returns <code class="inline">429</code>.</p>
+
+        <h2 id="sdk" style="margin-top:40px;">SDKs</h2>
+        <p style="margin:12px 0 14px;">A thin wrapper is all you need until official SDKs ship — the REST API is the source of truth. Example (JavaScript):</p>
+        <pre class="code-block">async function createCard(apiKey, data) {
+  const res = await fetch("{{ request.url_root }}api/v1/cards", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${apiKey}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+  return res.json();
+}</pre>
+        <p style="margin:14px 0 6px;">Python:</p>
+        <pre class="code-block">import requests
+requests.post(
+    "{{ request.url_root }}api/v1/cards",
+    headers={"Authorization": f"Bearer {api_key}"},
+    json={"name": "Ahmed Benali", "title": "CEO"},
+)</pre>
+        <p style="margin:14px 0 6px;">Embed a card in any site:</p>
+        <pre class="code-block">&lt;iframe src="{{ request.url_root }}c/ahmedbenali" width="380" height="720"&gt;&lt;/iframe&gt;</pre>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
