@@ -33,8 +33,8 @@ REQUIRED_MODULES = {
     "PIL": "Pillow",
     "qrcode": "qrcode",
 }
-HOST = os.environ.get("CARDX_HOST", "127.0.0.1")
-PORT = int(os.environ.get("CARDX_PORT", "5000"))
+HOST = os.environ.get("CARDX_HOST", "0.0.0.0")
+PORT = int(os.environ.get("PORT", os.environ.get("CARDX_PORT", "5000")))
 
 
 def _missing_modules():
@@ -164,5 +164,4 @@ def main():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    main()
