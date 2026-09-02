@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}404 — CardX{% endblock %}
+{% block content %}
+<section class="section" style="text-align:center;">
+  <div class="container">
+    <h1 style="font-size:80px;">404</h1>
+    <p style="margin:14px auto 26px;">{{ 'الصفحة التي تبحث عنها غير موجودة.' if locale=='ar' else "The page you're looking for doesn't exist." }}</p>
+    <a href="{{ url_for('site.landing') }}" class="btn btn-primary">{{ 'العودة للرئيسية' if locale=='ar' else 'Back home' }}</a>
+  </div>
+</section>
+{% endblock %}

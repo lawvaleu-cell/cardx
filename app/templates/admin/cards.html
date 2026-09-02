@@ -1,0 +1,22 @@
+{% extends "dashboard/_shell.html" %}
+{% block title %}{{ 'إدارة البطاقات' if locale=='ar' else 'Manage Cards' }} — CardX{% endblock %}
+{% block page_title %}{{ 'إدارة البطاقات' if locale=='ar' else 'Manage Cards' }}{% endblock %}
+{% block dash_content %}
+<div class="panel">
+  <table class="data-table">
+    <tr><th>{{ 'البطاقة' if locale=='ar' else 'Card' }}</th><th>{{ 'المالك' if locale=='ar' else 'Owner' }}</th><th>{{ 'القالب' if locale=='ar' else 'Template' }}</th><th></th></tr>
+    {% for c in cards %}
+    <tr>
+      <td><a href="{{ url_for('cards.public_card', username=c.username) }}" target="_blank">{{ c.first_name }} {{ c.last_name }} (/{{ c.username }})</a></td>
+      <td>{{ c.owner_email }}</td>
+      <td>{{ c.template|capitalize }}</td>
+      <td>
+        <form method="post" action="{{ url_for('admin.delete_card', card_id=c.id) }}" onsubmit="return confirm('{{ 'حذف؟' if locale=='ar' else 'Delete?' }}');">
+          <button type="submit" class="btn btn-sm btn-outline" style="color:var(--danger);">{{ 'حذف' if locale=='ar' else 'Delete' }}</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

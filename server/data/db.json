@@ -1,0 +1,339 @@
+{
+  "users": [
+    {
+      "id": "a67890c1-4527-4a83-93fd-8648d4051819",
+      "name": "hamid",
+      "email": "abdelhamidstartup@gmail.com",
+      "passwordHash": "$2a$10$smuYmoGYouI4I7Rs9WukV.2phEQP1fbpvUJh4SdbInPox8Qn2w3v2",
+      "role": "admin",
+      "locale": "ar",
+      "createdAt": "2026-09-02T00:09:59.576Z"
+    }
+  ],
+  "chatbots": [
+    {
+      "id": "5d41f4f3-d4cc-4bfc-a71f-e852d57b8e5c",
+      "ownerId": "a67890c1-4527-4a83-93fd-8648d4051819",
+      "name": "test",
+      "description": "test",
+      "category": "restaurant",
+      "avatar": "🤖",
+      "status": "active",
+      "createdAt": "2026-09-02T00:10:25.877Z",
+      "updatedAt": "2026-09-02T00:11:26.750Z",
+      "config": {
+        "languages": {
+          "default": "auto",
+          "options": [
+            "ar",
+            "darija",
+            "fr",
+            "en"
+          ],
+          "autoDetect": true
+        },
+        "personality": {
+          "tone": "funny",
+          "responseLength": 50,
+          "emoji": "normal"
+        },
+        "welcomeMessage": "سلام 👋 مرحبا بك في test، واش نقدر نعاونك فيه؟",
+        "quickQuestions": [
+          {
+            "id": "7df86bee-3f2d-4356-b611-3b42704d18d9",
+            "label": "ما هي الأسعار؟",
+            "icon": "💰"
+          },
+          {
+            "id": "ed5ccdcf-3578-4374-9a9c-fc9fc65bccaa",
+            "label": "كيف يمكنني الطلب؟",
+            "icon": "🛒"
+          },
+          {
+            "id": "06ffbf73-97cc-4d18-8fa7-f32beeaf03cd",
+            "label": "هل يوجد توصيل؟",
+            "icon": "🚚"
+          }
+        ],
+        "customerInfo": {
+          "fields": [
+            "fullName",
+            "phone",
+            "email",
+            "wilaya",
+            "address"
+          ],
+          "order": [
+            "fullName",
+            "phone",
+            "email",
+            "wilaya",
+            "address"
+          ]
+        },
+        "unknownQuestion": {
+          "mode": "custom",
+          "customResponse": "سمحلي، ما عنديش معلومة مؤكدة على هذي النقطة. تقدر تتواصل مع الفريق تاعنا."
+        },
+        "handoff": {
+          "channel": "whatsapp",
+          "phone": "",
+          "email": "",
+          "message": "راح نحولك لموظف حقيقي، لحظة من فضلك."
+        },
+        "appearance": {
+          "primaryColor": "#5B4CFF",
+          "secondaryColor": "#111827",
+          "background": "#FFFFFF",
+          "position": "bottom-right",
+          "borderRadius": 16,
+          "fontSize": 14,
+          "buttonStyle": "rounded",
+          "widgetSize": "medium",
+          "logo": ""
+        }
+      },
+      "publishedAt": "2026-09-02T00:12:57.543Z"
+    }
+  ],
+  "flows": [
+    {
+      "id": "96bb4bc6-d136-47f5-b2e2-cb3dec418ce3",
+      "botId": "5d41f4f3-d4cc-4bfc-a71f-e852d57b8e5c",
+      "nodes": [
+        {
+          "id": "n-start",
+          "type": "start",
+          "position": {
+            "x": 60,
+            "y": 60
+          },
+          "data": {}
+        },
+        {
+          "id": "n-welcome",
+          "type": "message",
+          "position": {
+            "x": 60,
+            "y": 190
+          },
+          "data": {
+            "text": "سلام 👋 واش نقدر نعاونك فيه؟"
+          }
+        },
+        {
+          "id": "n-menu",
+          "type": "buttons",
+          "position": {
+            "x": 60,
+            "y": 320
+          },
+          "data": {
+            "text": "اختر من فضلك:",
+            "options": [
+              {
+                "label": "المنتجات",
+                "value": "products"
+              },
+              {
+                "label": "الأسعار",
+                "value": "pricing"
+              },
+              {
+                "label": "التواصل معنا",
+                "value": "contact"
+              }
+            ]
+          }
+        },
+        {
+          "id": "n-n1v80rlq",
+          "type": "message",
+          "position": {
+            "x": 1857,
+            "y": 40.6875
+          },
+          "data": {
+            "text": "اكتب رسالة البوت هنا..."
+          }
+        },
+        {
+          "id": "n-9ktnvgyr",
+          "type": "question",
+          "position": {
+            "x": 1918,
+            "y": 257.6875
+          },
+          "data": {
+            "text": "ما هو سؤالك؟"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "n-start",
+          "target": "n-welcome"
+        },
+        {
+          "id": "e2",
+          "source": "n-welcome",
+          "target": "n-menu"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "id": "1b69b650-f1cc-492a-8c24-86f8506222ae",
+      "botId": "5d41f4f3-d4cc-4bfc-a71f-e852d57b8e5c",
+      "visitorId": "v_fv987ex4qyw",
+      "startedAt": "2026-09-02T00:13:08.669Z",
+      "channel": "public_link"
+    }
+  ],
+  "messages": [
+    {
+      "id": "b76e78d1-67d2-49b3-b359-e358c1c1a8fe",
+      "conversationId": "1b69b650-f1cc-492a-8c24-86f8506222ae",
+      "from": "bot",
+      "text": "سلام 👋 واش نقدر نعاونك فيه؟",
+      "nodeId": "n-welcome",
+      "createdAt": "2026-09-02T00:13:08.670Z"
+    },
+    {
+      "id": "edc18914-c310-4597-b053-1b7549831672",
+      "conversationId": "1b69b650-f1cc-492a-8c24-86f8506222ae",
+      "from": "bot",
+      "text": "اختر من فضلك:",
+      "nodeId": "n-menu",
+      "createdAt": "2026-09-02T00:13:08.670Z"
+    },
+    {
+      "id": "f4c39e51-2db2-4564-adc4-114b3ed64e3c",
+      "conversationId": "1b69b650-f1cc-492a-8c24-86f8506222ae",
+      "from": "user",
+      "text": "pricing",
+      "createdAt": "2026-09-02T00:13:12.835Z"
+    },
+    {
+      "id": "f33aa119-3366-411f-be06-6881ba1776e4",
+      "conversationId": "1b69b650-f1cc-492a-8c24-86f8506222ae",
+      "from": "bot",
+      "text": "سمحلي، ما عنديش معلومة مؤكدة على هذي النقطة. تقدر تتواصل مع الفريق تاعنا.",
+      "createdAt": "2026-09-02T00:13:12.835Z"
+    },
+    {
+      "id": "bbe83ca4-8982-414b-919b-6b85b4ef0352",
+      "conversationId": "1b69b650-f1cc-492a-8c24-86f8506222ae",
+      "from": "user",
+      "text": "واش كاين منتجات عندكم",
+      "createdAt": "2026-09-02T00:13:39.414Z"
+    },
+    {
+      "id": "b9bfd740-595d-42b2-a576-ae560f39ce76",
+      "conversationId": "1b69b650-f1cc-492a-8c24-86f8506222ae",
+      "from": "bot",
+      "text": "سلام 👋 واش نقدر نعاونك فيه؟",
+      "nodeId": "n-welcome",
+      "createdAt": "2026-09-02T00:13:39.415Z"
+    },
+    {
+      "id": "df3c35d3-faa5-4789-b72a-427f102daaea",
+      "conversationId": "1b69b650-f1cc-492a-8c24-86f8506222ae",
+      "from": "bot",
+      "text": "اختر من فضلك:",
+      "nodeId": "n-menu",
+      "createdAt": "2026-09-02T00:13:39.415Z"
+    },
+    {
+      "id": "aa824d2e-c9f1-47bd-928c-04197a48630c",
+      "conversationId": "1b69b650-f1cc-492a-8c24-86f8506222ae",
+      "from": "user",
+      "text": "اعطيني الاسعار",
+      "createdAt": "2026-09-02T00:13:47.811Z"
+    },
+    {
+      "id": "41c3561f-b5e7-46ac-ac03-e595c70bc5fd",
+      "conversationId": "1b69b650-f1cc-492a-8c24-86f8506222ae",
+      "from": "bot",
+      "text": "سمحلي، ما عنديش معلومة مؤكدة على هذي النقطة. تقدر تتواصل مع الفريق تاعنا.",
+      "createdAt": "2026-09-02T00:13:47.811Z"
+    }
+  ],
+  "events": [
+    {
+      "id": "091988bd-85c9-4eb9-9586-dad0ff550ee1",
+      "botId": "5d41f4f3-d4cc-4bfc-a71f-e852d57b8e5c",
+      "type": "button_click",
+      "payload": {
+        "label": "pricing"
+      },
+      "createdAt": "2026-09-02T00:13:12.835Z"
+    }
+  ],
+  "plans": [
+    {
+      "id": "free",
+      "name": "Free",
+      "priceMonthlyDA": 0,
+      "priceYearlyDA": 0,
+      "maxBots": 1,
+      "maxConversationsPerMonth": 200,
+      "features": [
+        "embed_widget_basic",
+        "public_link"
+      ]
+    },
+    {
+      "id": "starter",
+      "name": "Starter",
+      "priceMonthlyDA": 2500,
+      "priceYearlyDA": 25000,
+      "maxBots": 5,
+      "maxConversationsPerMonth": 3000,
+      "features": [
+        "embed_widget",
+        "custom_branding"
+      ]
+    },
+    {
+      "id": "pro",
+      "name": "Pro",
+      "priceMonthlyDA": 6500,
+      "priceYearlyDA": 65000,
+      "maxBots": 20,
+      "maxConversationsPerMonth": 20000,
+      "features": [
+        "advanced_flows",
+        "analytics",
+        "remove_branding"
+      ]
+    },
+    {
+      "id": "business",
+      "name": "Business",
+      "priceMonthlyDA": 15000,
+      "priceYearlyDA": 150000,
+      "maxBots": 999,
+      "maxConversationsPerMonth": 999999,
+      "features": [
+        "team_members",
+        "advanced_analytics",
+        "priority_support"
+      ]
+    }
+  ],
+  "subscriptions": [
+    {
+      "id": "b508badf-0c9d-48b1-b46c-4f50b59d8423",
+      "userId": "a67890c1-4527-4a83-93fd-8648d4051819",
+      "planId": "free",
+      "status": "active",
+      "billingCycle": "monthly",
+      "currentPeriodEnd": null,
+      "createdAt": "2026-09-02T00:09:59.576Z"
+    }
+  ],
+  "invoices": []
+}

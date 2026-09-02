@@ -1,0 +1,20 @@
+{% extends "dashboard/_shell.html" %}
+{% block title %}{{ 'استخدام API' if locale=='ar' else 'API Usage' }} — CardX{% endblock %}
+{% block page_title %}{{ 'استخدام API' if locale=='ar' else 'API Usage' }}{% endblock %}
+{% block dash_content %}
+<div class="panel">
+  <table class="data-table">
+    <tr><th>{{ 'المستخدم' if locale=='ar' else 'User' }}</th><th>{{ 'المفتاح' if locale=='ar' else 'Key' }}</th><th>{{ 'اليوم' if locale=='ar' else 'Today' }}</th><th>{{ 'إجمالي' if locale=='ar' else 'Total' }}</th><th>{{ 'الحالة' if locale=='ar' else 'Status' }}</th></tr>
+    {% for k in keys %}
+    <tr>
+      <td>{{ k.email }}</td>
+      <td><code class="inline">{{ k.key_prefix }}••••</code></td>
+      <td>{{ k.requests_today }}</td>
+      <td>{{ k.total_requests }}</td>
+      <td>{% if k.is_active %}<span class="pill">{{ 'نشط' if locale=='ar' else 'Active' }}</span>{% else %}<span class="pill" style="background:#FEF3F2;color:#B42318;">{{ 'ملغى' if locale=='ar' else 'Revoked' }}</span>{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% if not keys %}<div class="empty-state"><div class="icon">🔑</div>{{ 'لا يوجد استخدام API بعد.' if locale=='ar' else 'No API usage yet.' }}</div>{% endif %}
+</div>
+{% endblock %}

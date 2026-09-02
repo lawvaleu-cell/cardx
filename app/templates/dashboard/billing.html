@@ -1,0 +1,39 @@
+{% extends "dashboard/_shell.html" %}
+{% block title %}{{ t('billing') }} — CardX{% endblock %}
+{% block page_title %}{{ t('billing') }}{% endblock %}
+{% block dash_content %}
+<div class="panel" style="margin-bottom:20px;">
+  <p style="font-size:13px;">{{ '⚠️ هذا نظام فوترة داخلي مبسّط لغرض العرض التوضيحي (لا يوجد بوابة دفع خارجية حقيقية متصلة).' if locale=='ar' else '⚠️ This is a simplified internal billing simulation for demo purposes (no real external payment gateway is connected).' }}</p>
+</div>
+<div class="pricing-grid" style="margin-bottom:24px;">
+  {% for plan in plans %}
+  <div class="price-card {{ 'featured' if plan.id==current_plan.id }}">
+    <h3>{{ plan.name }}</h3>
+    <div class="price-amount">${{ plan.price_month|int }}<span>/{{ 'شهريًا' if locale=='ar' else 'mo' }}</span></div>
+    <ul class="price-feats">
+      <li>{{ plan.max_cards }} {{ 'بطاقات' if locale=='ar' else 'cards' }}</li>
+      <li>{{ '{:,}'.format(plan.max_api_requests_day) }} API req/day</li>
+      <li>{{ plan.team_members }} {{ 'أعضاء' if locale=='ar' else 'members' }}</li>
+    </ul>
+    {% if plan.id==current_plan.id %}
+    <button class="btn btn-outline btn-block" disabled>{{ 'خطتك الحالية' if locale=='ar' else 'Current plan' }}</button>
+    {% else %}
+    <form method="post"><input type="hidden" name="plan_id" value="{{ plan.id }}">
+      <button type="submit" class="btn btn-primary btn-block">{{ 'اختر هذه الخطة' if locale=='ar' else 'Choose plan' }}</button>
+    </form>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+<div class="panel">
+  <div class="panel-head"><h3>{{ 'سجل المدفوعات' if locale=='ar' else 'Payment history' }}</h3></div>
+  {% if payments %}
+  <table class="data-table">
+    <tr><th>{{ 'التاريخ' if locale=='ar' else 'Date' }}</th><th>{{ 'المبلغ' if locale=='ar' else 'Amount' }}</th><th>{{ 'الحالة' if locale=='ar' else 'Status' }}</th></tr>
+    {% for p in payments %}<tr><td>{{ p.created_at | timestamp_to_date }}</td><td>${{ p.amount }}</td><td><span class="pill">{{ p.status }}</span></td></tr>{% endfor %}
+  </table>
+  {% else %}
+  <div class="empty-state"><div class="icon">💳</div>{{ 'لا توجد مدفوعات بعد.' if locale=='ar' else 'No payments yet.' }}</div>
+  {% endif %}
+</div>
+{% endblock %}

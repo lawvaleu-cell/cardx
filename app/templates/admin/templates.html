@@ -1,0 +1,13 @@
+{% extends "dashboard/_shell.html" %}
+{% block title %}{{ t('templates') }} — Admin — CardX{% endblock %}
+{% block page_title %}{{ t('templates') }}{% endblock %}
+{% block dash_content %}
+<div class="panel">
+  <table class="data-table">
+    <tr><th>{{ 'القالب' if locale=='ar' else 'Template' }}</th><th>{{ 'عدد الاستخدامات' if locale=='ar' else 'Times used' }}</th></tr>
+    {% for tpl in templates %}
+    <tr><td>{{ tpl.name }}</td><td>{{ usage_map.get(tpl.slug, 0) }}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

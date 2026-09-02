@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="{{ locale }}" dir="{{ 'rtl' if rtl else 'ltr' }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ card.seo_title or (card.first_name + ' ' + card.last_name + ' — CardX') }}</title>
+<meta name="description" content="{{ card.seo_description or card.bio or (card.job_title + ' at ' + card.company) }}">
+{% if not card.seo_index %}<meta name="robots" content="noindex,nofollow">{% endif %}
+<meta property="og:title" content="{{ card.first_name }} {{ card.last_name }}">
+<meta property="og:description" content="{{ card.job_title }} — {{ card.company }}">
+<meta property="og:type" content="profile">
+{% if card.avatar_url %}<meta property="og:image" content="{{ base_url }}{{ card.avatar_url }}">{% endif %}
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="{{ base_url }}/c/{{ card.username }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/card-templates.css') }}">
+</head>
+<body class="pc-body" style="background:{% if tpl.layout=='dark-luxury' %}#000{% else %}#F1F1F5{% endif %};">
+<div class="pc-wrap layout-{{ tpl.layout }}"
+     style="--pc-bg:{{ card.bg_color }};--pc-text:{{ card.text_color }};--pc-primary:{{ card.primary_color }};--pc-accent:{{ card.accent_color }};background:{{ card.bg_color }};color:{{ card.text_color }};">
+
+  {% if tpl.layout == 'cover-hero' %}
+  <div class="pc-cover" style="{% if card.cover_url %}background-image:url('{{ card.cover_url }}');{% else %}background:linear-gradient(135deg,{{card.primary_color}},{{card.accent_color}});{% endif %}"></div>
+  {% endif %}
+
+  <div class="pc-scroll">
+    <div class="pc-header">
+      {% if tpl.layout == 'side-profile' %}
+        <img class="pc-avatar shape-{{ card.avatar_shape }}" style="width:84px;height:84px;" src="{{ card.avatar_url or 'https://api.dicebear.com/7.x/initials/svg?seed=' + card.first_name }}">
+        <div class="pc-name-block">
+          <div class="pc-name">{{ card.first_name }} {{ card.last_name }}</div>
+          <div class="pc-role">{{ card.job_title }}</div>
+          <div class="pc-company">{{ card.company }}</div>
+        </div>
+      {% else %}
+        <img class="pc-avatar shape-{{ card.avatar_shape }}" style="width:108px;height:108px;" src="{{ card.avatar_url or 'https://api.dicebear.com/7.x/initials/svg?seed=' + card.first_name }}">
+        <div class="pc-name">{{ card.first_name }} {{ card.last_name }}</div>
+        <div class="pc-role">{{ card.job_title }}</div>
+        <div class="pc-company">{{ card.company }}</div>
+      {% endif %}
+    </div>
+
+    <div class="pc-actions">
+      {% if card.phone %}<a href="{{ url_for('cards.track_click', username=card.username, channel='call') }}" class="pc-action-btn" style="background:{{ card.primary_color }};"><span class="ic">📞</span>{{ t('call_me') }}</a>{% endif %}
+      {% if card.email %}<a href="{{ url_for('cards.track_click', username=card.username, channel='email') }}" class="pc-action-btn" style="background:{{ card.primary_color }};"><span class="ic">✉️</span>{{ t('email_me') }}</a>{% endif %}
+      {% if card.whatsapp or card.phone %}<a href="{{ url_for('cards.track_click', username=card.username, channel='whatsapp') }}" class="pc-action-btn" style="background:{{ card.primary_color }};"><span class="ic">💬</span>WhatsApp</a>{% endif %}
+      {% if card.website %}<a href="{{ url_for('cards.track_click', username=card.username, channel='website') }}" class="pc-action-btn" style="background:{{ card.primary_color }};"><span class="ic">🌐</span>{{ 'الموقع' if locale=='ar' else 'Website' }}</a>{% endif %}
+    </div>
+
+    {% for sec in order %}
+      {% if sec in visible %}
+
+        {% if sec == 'about' and (card.bio or content.get('about')) %}
+        <div class="pc-section">
+          <h3>{{ t('about_me') }}</h3>
+          <p>{{ content['about'].body if 'about' in content else card.bio }}</p>
+        </div>
+        {% endif %}
+
+        {% if sec == 'services' and 'services' in content %}
+        <div class="pc-section">
+          <h3>{{ section_labels['services'] }}</h3>
+          <p>{{ content['services'].body }}</p>
+        </div>
+        {% endif %}
+
+        {% if sec == 'experience' and 'experience' in content %}
+        <div class="pc-section"><h3>{{ section_labels['experience'] }}</h3><p>{{ content['experience'].body }}</p></div>
+        {% endif %}
+
+        {% if sec == 'skills' and 'skills' in content %}
+        <div class="pc-section"><h3>{{ section_labels['skills'] }}</h3><p>{{ content['skills'].body }}</p></div>
+        {% endif %}
+
+        {% if sec == 'social' and links %}
+        <div class="pc-section">
+          <h3>{{ t('nav_templates') if False else ('تواصل معي' if locale=='ar' else 'Connect with me') }}</h3>
+          <div class="pc-social-list">
+            {% set icons = {'facebook':'📘','instagram':'📸','linkedin':'💼','x':'𝕏','youtube':'▶️','tiktok':'🎵','github':'💻','website':'🌐','whatsapp':'💬'} %}
+            {% for link in links %}
+            <a href="{{ url_for('cards.track_click', username=card.username, channel=link.platform) }}" class="pc-social-item">
+              <div class="pc-si-left"><span class="pc-si-icon">{{ icons.get(link.platform, '🔗') }}</span>{{ link.platform|capitalize }}<div class="pc-si-sub">{{ 'تابعني على' if locale=='ar' else 'Follow on' }} {{ link.platform|capitalize }}</div></div>
+              <span>›</span>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        {% if sec == 'gallery' and 'gallery' in content %}
+        <div class="pc-section"><h3>{{ section_labels['gallery'] }}</h3><div class="pc-gallery"><div></div><div></div><div></div></div></div>
+        {% endif %}
+
+        {% if sec == 'contact' and card.address %}
+        <div class="pc-section"><h3>{{ t('contact') }}</h3><p>📍 {{ card.address }}</p></div>
+        {% endif %}
+
+        {% if sec == 'location' and card.address %}
+        <div class="pc-section"><h3>{{ t('location') }}</h3><p>📍 {{ card.address }}</p></div>
+        {% endif %}
+
+      {% endif %}
+    {% endfor %}
+
+    <div class="pc-section">
+      <div class="pc-qr-box">
+        <img src="{{ url_for('cards.card_qr', username=card.username) }}" alt="QR">
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:14px;">{{ t('share_card') }}</div>
+          <div style="font-size:12px;opacity:.65;">{{ base_url.replace('http://','').replace('https://','') }}/c/{{ card.username }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pc-footer-actions">
+    <a href="{{ url_for('cards.card_vcard', username=card.username) }}" class="btn btn-accent" style="background:{{ card.accent_color }};">💾 {{ t('add_to_contacts') }}</a>
+    <button class="btn btn-outline" onclick="shareCard()">📤 {{ t('share_card') }}</button>
+  </div>
+</div>
+
+<script>
+function shareCard() {
+  var url = window.location.href;
+  if (navigator.share) {
+    navigator.share({ title: document.title, url: url }).catch(function(){});
+  } else {
+    navigator.clipboard.writeText(url).then(function () { alert("{{ 'تم نسخ الرابط' if locale=='ar' else 'Link copied' }}"); });
+  }
+}
+</script>
+</body>
+</html>

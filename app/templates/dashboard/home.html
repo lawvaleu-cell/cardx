@@ -1,0 +1,63 @@
+{% extends "dashboard/_shell.html" %}
+{% block title %}{{ t('dashboard') }} — CardX{% endblock %}
+{% block page_title %}{{ t('dashboard') }}{% endblock %}
+{% block topbar_actions %}<a href="{{ url_for('cards.new_card') }}" class="btn btn-accent btn-sm">➕ {{ t('create_card') }}</a>{% endblock %}
+{% block dash_content %}
+<div class="grid-4">
+  <div class="stat-card"><div class="stat-label">{{ t('total_cards') }}</div><div class="stat-value">{{ total_cards }}</div></div>
+  <div class="stat-card"><div class="stat-label">{{ t('total_views') }}</div><div class="stat-value">{{ total_views }}</div></div>
+  <div class="stat-card"><div class="stat-label">{{ t('qr_scans') }}</div><div class="stat-value">{{ qr_scans }}</div></div>
+  <div class="stat-card"><div class="stat-label">{{ t('contacts_saved') }}</div><div class="stat-value">{{ contacts_saved }}</div></div>
+</div>
+
+<div class="grid-2" style="margin-top:20px;align-items:start;">
+  <div class="panel">
+    <div class="panel-head"><h3>{{ 'نظرة عامة على المشاهدات' if locale=='ar' else 'Views Overview' }}</h3><span class="pill">{{ 'آخر 7 أيام' if locale=='ar' else 'Last 7 days' }}</span></div>
+    <div class="chart-wrap">{{ views_svg|safe }}</div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h3>{{ 'مصادر الزيارات' if locale=='ar' else 'Traffic Sources' }}</h3></div>
+    {% if sources %}
+    <div style="display:flex;align-items:center;gap:24px;">
+      {{ sources_svg|safe }}
+      <div style="flex:1;">
+        {% for s in sources %}
+        <div style="display:flex;justify-content:space-between;font-size:13.5px;padding:6px 0;border-bottom:1px solid var(--line);">
+          <span>{{ s.device|capitalize }}</span><strong>{{ s.c }}</strong>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% else %}
+    <div class="empty-state"><div class="icon">📭</div>{{ 'لا توجد بيانات بعد' if locale=='ar' else 'No data yet' }}</div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="grid-2" style="margin-top:20px;align-items:start;">
+  <div class="panel">
+    <div class="panel-head"><h3>{{ 'أفضل الروابط' if locale=='ar' else 'Top Links' }}</h3></div>
+    {% if top_links %}
+    <table class="data-table">
+      {% for l in top_links %}<tr><td>{{ l.meta|capitalize }}</td><td style="text-align:end;font-weight:700;">{{ l.c }}</td></tr>{% endfor %}
+    </table>
+    {% else %}
+    <div class="empty-state"><div class="icon">🔗</div>{{ 'لا توجد نقرات بعد' if locale=='ar' else 'No clicks yet' }}</div>
+    {% endif %}
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h3>{{ 'أحدث البطاقات' if locale=='ar' else 'Recent Cards' }}</h3><a href="{{ url_for('dashboard.my_cards') }}" class="pill">{{ 'عرض الكل' if locale=='ar' else 'View all' }}</a></div>
+    {% if recent_cards %}
+    {% for c in recent_cards %}
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);">
+      <div class="avatar-sm" style="background:{{ c.primary_color }}22;color:{{ c.primary_color }};">{{ (c.first_name[:1] if c.first_name else 'C') }}</div>
+      <div style="flex:1;"><div style="font-weight:600;font-size:14px;">{{ c.first_name }} {{ c.last_name }}</div><div style="font-size:12px;color:var(--muted-2);">/{{ c.username }}</div></div>
+      <a href="{{ url_for('cards.builder', card_id=c.id) }}" class="btn btn-sm btn-outline">{{ t('edit_card') }}</a>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="empty-state"><div class="icon">🪪</div>{{ 'لم تنشئ أي بطاقة بعد' if locale=='ar' else "You haven't created a card yet" }}<br><a href="{{ url_for('cards.new_card') }}" class="btn btn-primary btn-sm" style="margin-top:14px;">{{ t('create_card') }}</a></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

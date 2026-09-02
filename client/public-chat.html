@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Tajawal','Segoe UI',sans-serif;background:#f3f4f6;height:100vh;display:flex;align-items:center;justify-content:center}
+  .chat-shell{width:420px;max-width:100vw;height:100vh;background:#fff;display:flex;flex-direction:column;box-shadow:0 0 40px rgba(0,0,0,.08)}
+  @media(min-width:480px){.chat-shell{height:90vh;border-radius:18px;margin:16px}}
+  .chat-head{padding:16px 18px;color:#fff;display:flex;align-items:center;gap:10px;font-weight:800;font-size:15px}
+  .chat-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:9px;background:#fafafa}
+  .bubble{max-width:78%;padding:10px 13px;border-radius:14px;font-size:13.5px;line-height:1.5}
+  .bubble.bot{align-self:flex-start;background:#fff;border:1px solid #e5e7eb;border-bottom-left-radius:4px}
+  .bubble.user{align-self:flex-end;color:#fff;border-bottom-right-radius:4px}
+  .btns{display:flex;flex-wrap:wrap;gap:7px;align-self:flex-start;max-width:92%}
+  .btn{padding:8px 13px;border-radius:10px;border:1.5px solid;background:#fff;font-size:13px;font-weight:700;cursor:pointer}
+  .input-row{display:flex;gap:8px;padding:12px;border-top:1px solid #e5e7eb;background:#fff}
+  .input-row input{flex:1;border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px;font-size:14px}
+  .input-row button{border:none;color:#fff;border-radius:10px;width:40px;height:40px;cursor:pointer;font-size:16px}
+  .powered{text-align:center;font-size:10.5px;color:#9ca3af;padding:6px}
+</style>
+</head>
+<body>
+  <div class="chat-shell">
+    <div class="chat-head" id="head">…</div>
+    <div class="chat-body" id="body"></div>
+    <div class="input-row"><input id="input" placeholder="اكتب رسالتك..."><button id="send">➤</button></div>
+    <div class="powered">Powered by BotDZ</div>
+  </div>
+<script>
+(function(){
+  var botId = location.pathname.split('/').pop();
+  var visitorId = localStorage.getItem('botdz_visitor_' + botId) || ('v_' + Math.random().toString(36).slice(2));
+  localStorage.setItem('botdz_visitor_' + botId, visitorId);
+  var conversationId = null, currentNodeId = null, primary = '#5B4CFF';
+  var bodyEl = document.getElementById('body');
+  var headEl = document.getElementById('head');
+  var inputEl = document.getElementById('input');
+
+  function addBubble(text, from){
+    var d = document.createElement('div');
+    d.className = 'bubble ' + from;
+    if (from === 'user') d.style.background = primary;
+    d.textContent = text;
+    bodyEl.appendChild(d);
+    bodyEl.scrollTop = bodyEl.scrollHeight;
+  }
+  function addButtons(list){
+    var wrap = document.createElement('div');
+    wrap.className = 'btns';
+    (list||[]).forEach(function(b){
+      var btn = document.createElement('button');
+      btn.className = 'btn';
+      btn.style.borderColor = primary; btn.style.color = primary;
+      btn.textContent = b.label;
+      btn.onclick = function(){ addBubble(b.label, 'user'); send(null, b.value); };
+      wrap.appendChild(btn);
+    });
+    bodyEl.appendChild(wrap);
+    bodyEl.scrollTop = bodyEl.scrollHeight;
+  }
+  function addLink(text, url){
+    var a = document.createElement('a');
+    a.href = url; a.target = '_blank'; a.textContent = text;
+    a.style.cssText = 'display:inline-block;padding:9px 13px;border-radius:10px;color:#fff;text-decoration:none;font-size:13px;font-weight:700;align-self:flex-start;background:' + primary;
+    bodyEl.appendChild(a);
+    bodyEl.scrollTop = bodyEl.scrollHeight;
+  }
+
+  function send(input, buttonValue){
+    fetch('/api/public/bots/' + botId + '/message', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ visitorId: visitorId, conversationId: conversationId, currentNodeId: currentNodeId, input: input, buttonValue: buttonValue, channel: 'public_link' })
+    }).then(function(r){ return r.json(); }).then(function(data){
+      conversationId = data.conversationId;
+      currentNodeId = data.nodeId;
+      (data.turns||[]).forEach(function(t){
+        if (t.type === 'buttons' || t.type === 'choice') { if (t.text) addBubble(t.text,'bot'); addButtons(t.buttons||t.options||[]); }
+        else if (t.type === 'link') { addLink(t.text, t.url); }
+        else if (t.text) { addBubble(t.text, 'bot'); }
+      });
+    });
+  }
+
+  fetch('/api/public/bots/' + botId).then(function(r){
+    if (!r.ok) throw new Error('not found');
+    return r.json();
+  }).then(function(data){
+    var cfg = data.config || {};
+    primary = (cfg.appearance && cfg.appearance.primaryColor) || '#5B4CFF';
+    headEl.style.background = primary;
+    headEl.textContent = (data.avatar || '🤖') + '  ' + data.name;
+    send(null, null);
+  }).catch(function(){
+    headEl.textContent = 'Bot not found';
+    bodyEl.textContent = 'This chatbot does not exist or is not published yet.';
+  });
+
+  document.getElementById('send').onclick = function(){
+    var v = inputEl.value.trim();
+    if (!v) return;
+    addBubble(v, 'user');
+    inputEl.value = '';
+    send(v, null);
+  };
+  inputEl.addEventListener('keydown', function(e){ if (e.key === 'Enter') document.getElementById('send').click(); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{{ t('nav_pricing') }} — CardX{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">{% endblock %}
+{% block content %}
+<section class="section" style="padding-top:40px;">
+  <div class="container">
+    <div class="section-head"><h2>{{ t('pricing_title') }}</h2>
+      <p>{{ 'الأسعار والحدود قابلة للتعديل من لوحة الإدارة.' if locale=='ar' else 'Prices and limits are editable from the Admin panel.' }}</p>
+    </div>
+    <div class="pricing-grid">
+      {% for plan in plans %}
+      <div class="price-card {{ 'featured' if plan.slug=='pro' }}">
+        <h3>{{ plan.name }}</h3>
+        <div class="price-amount">
+          {% if plan.slug=='enterprise' %}{{ 'مخصص' if locale=='ar' else 'Custom' }}
+          {% else %}${{ plan.price_month|int }}<span>/{{ 'شهريًا' if locale=='ar' else 'mo' }}</span>{% endif %}
+        </div>
+        <ul class="price-feats">
+          <li>{{ plan.max_cards }} {{ 'بطاقات' if locale=='ar' else 'cards' }}</li>
+          <li>{{ '{:,}'.format(plan.max_api_requests_day) }} {{ 'طلب API يوميًا' if locale=='ar' else 'API requests/day' }}</li>
+          <li>{{ plan.team_members }} {{ 'أعضاء فريق' if locale=='ar' else 'team members' }}</li>
+          {% if plan.advanced_analytics %}<li>{{ 'تحليلات متقدمة' if locale=='ar' else 'Advanced analytics' }}</li>{% endif %}
+          {% if plan.custom_domain %}<li>{{ 'نطاق مخصص' if locale=='ar' else 'Custom domain' }}</li>{% endif %}
+          {% if plan.white_label %}<li>White Label</li>{% endif %}
+        </ul>
+        {% if current_user %}
+        <a href="{{ url_for('dashboard.billing') }}" class="btn {{ 'btn-primary' if plan.slug=='pro' else 'btn-outline' }} btn-block">{{ 'ترقية' if locale=='ar' else 'Upgrade' }}</a>
+        {% else %}
+        <a href="{{ url_for('auth.register') }}" class="btn {{ 'btn-primary' if plan.slug=='pro' else 'btn-outline' }} btn-block">{{ 'ابدأ الآن' if locale=='ar' else 'Get Started' }}</a>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
